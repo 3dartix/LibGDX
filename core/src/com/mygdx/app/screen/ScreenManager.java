@@ -1,4 +1,4 @@
-package com.mygdx.game;
+package com.mygdx.app.screen;
 
 public class ScreenManager {
     public static final int SCREEN_WIDTH = 1000;
