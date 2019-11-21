@@ -41,7 +41,7 @@ public class Hero {
     public void update(float dt){
         fireTimer += dt;
         if(Gdx.input.isKeyPressed(Input.Keys.P)){
-            if(fireTimer > 0.1f){
+            if(fireTimer > 0.05f){
                 fireTimer = 0.0f;
 
                 //координаты ор.1
@@ -51,8 +51,8 @@ public class Hero {
                 float weaponX2 = (position.x) +(25 * MathUtils.cos((float)Math.toRadians(angle - 90)));
                 float weaponY2 =(position.y)+(25* MathUtils.sin((float)Math.toRadians(angle - 90)));
 
-                gc.getBulletController().setup(weaponX1, weaponY1,(float)Math.cos(Math.toRadians(angle)) * 600 + velocity.x, (float)Math.sin(Math.toRadians(angle))*600 + velocity.y);
-                gc.getBulletController().setup(weaponX2, weaponY2,(float)Math.cos(Math.toRadians(angle)) * 600 + velocity.x, (float)Math.sin(Math.toRadians(angle))*600 + velocity.y);
+                gc.getBulletController().setup(weaponX1, weaponY1,(float)Math.cos(Math.toRadians(angle)) * 800, (float)Math.sin(Math.toRadians(angle))*800);
+                gc.getBulletController().setup(weaponX2, weaponY2,(float)Math.cos(Math.toRadians(angle)) * 800, (float)Math.sin(Math.toRadians(angle))*800);
             }
         }
 

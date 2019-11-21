@@ -13,7 +13,7 @@ public class GameController {
     public GameController() {
         this.backgrond = new Background(this);
         this.hero = new Hero(this);
-        this.asteroidController = new AsteroidController(this,3);
+        this.asteroidController = new AsteroidController(this,10);
         this.bulletController = new BulletController(this);
     }
 
@@ -54,7 +54,7 @@ public class GameController {
             Bullet b = bulletController.getActiveList().get(i);
             for (int j = 0; j < asteroidController.getActiveList().size(); j++) {
                 Asteroid a = asteroidController.getActiveList().get(j);
-                if(b.getPosition().dst(a.getPosition()) < a.getRad()){
+                if(b.getPosition().dst(a.getPosition()) * 1.1f  < a.getRad()){
                     b.deactivate();
                     a.setLifeSub();
                     //a.deactivate();

@@ -28,7 +28,7 @@ public class AsteroidController extends ObjectPool<Asteroid> {
     public void render(SpriteBatch batch){
         for (int i = 0; i < activeList.size(); i++) {
             Asteroid b = activeList.get(i);
-            batch.draw(bulletTexture, b.getPosition().x - 128 * b.getScale(), b.getPosition().y - 128 * b.getScale(),128,128, 256,256,b.getScale(),b.getScale(),b.getAngel(),0,0,256,256,false, false);
+            batch.draw(bulletTexture, b.getPosition().x - 128 * b.getScale(), b.getPosition().y - 128 * b.getScale(),128 * b.getScale() ,128 * b.getScale(), 256 * b.getScale(),256 * b.getScale(),b.getScale(),b.getScale(),b.getAngel(),0,0,256,256,false, false);
         }
     }
 

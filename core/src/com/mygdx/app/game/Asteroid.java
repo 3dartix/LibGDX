@@ -59,8 +59,8 @@ public class Asteroid implements Poolable {
             this.angelVeloscity = MathUtils.random(-5f,-50f);
         }
 
-        this.scale = 1;// MathUtils.random(0.4f,0.9f);
-        life = 10;
+        this.scale =  MathUtils.random(0.6f,0.9f);
+        life = 25;
     }
 
     public void deactivate() {

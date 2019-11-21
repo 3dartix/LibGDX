@@ -8,9 +8,14 @@ public class Bullet implements Poolable {
     private Vector2 position;
     private Vector2 velocity;
     private boolean active;
+    private float angle; // угол повората на момент создания
 
     public Vector2 getPosition() {
         return position;
+    }
+
+    public float getAngle() {
+        return angle;
     }
 
     @Override
@@ -29,10 +34,11 @@ public class Bullet implements Poolable {
     }
 
     //vx - скорость, vy - направление
-    public void activate(float x, float y, float vx, float vy){
+    public void activate(float x, float y, float vx, float vy, float angle){
         position.set(x, y);
         velocity.set(vx,vy);
         active = true;
+        this.angle = angle;
     }
 
     public void update(float dt){
