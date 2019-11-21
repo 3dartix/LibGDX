@@ -1,41 +1,44 @@
-package com.mygdx.game;
+package com.mygdx.app.game;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.mygdx.app.StarGame;
+import com.mygdx.app.screen.ScreenManager;
 
-public class Backgrond {
+public class Background {
     private class Star{
         private Vector2 position;
         private Vector2 velocity;
         private float scale;
 
         public Star() {
-            this.position = new Vector2(MathUtils.random(-200, ScreenManager.SCREEN_WIDTH), MathUtils.random(0, ScreenManager.SCREEN_HEIGHT + 200));
-            this.velocity = new Vector2(MathUtils.random(-40, -5), 0);
-            this.scale = Math.abs(velocity.x) / 40 * 0.6f; //масштаб звезд
+            this.position = new Vector2(MathUtils.random(-200, ScreenManager.SCREEN_WIDTH + 200), MathUtils.random(-200, ScreenManager.SCREEN_HEIGHT + 200));
+            this.velocity = new Vector2(MathUtils.random(-15, -1), 0);
+            this.scale = Math.abs(velocity.x) / 15f * 0.6f; //масштаб звезд
         }
 
         public void update(float dt){
-            position.x += (velocity.x - game.getHero().getLastDisplacement().x * 15) * dt;
-            position.y += (velocity.y - game.getHero().getLastDisplacement().y * 15) * dt;
-            if(position.x < -20) {
+            position.x += (velocity.x - gc.getHero().getVelocity().x / 10) * dt;
+            position.y += (velocity.y - gc.getHero().getVelocity().y / 10) * dt;
+            if(position.x < -200) {
                 position.x = ScreenManager.SCREEN_WIDTH + 20;
                 position.y = MathUtils.random(-200,ScreenManager.SCREEN_HEIGHT + 200);
-                scale = Math.abs(velocity.x) / 40 * 0.6f; //масштаб звезд
+                velocity.x = MathUtils.random(-15, -1);
+                scale = Math.abs(velocity.x) / 15f * 0.6f; //масштаб звезд
             }
         }
     }
 
     private final int STARS_COUNT = 600;
-    private StarGame game;
+    private GameController gc;
     private Texture textureCosmos;
     private Texture textureStar;
     private Star[] stars;
 
-    public Backgrond(StarGame game){
-        this.game = game;
+    public Background(GameController gc){
+        this.gc = gc;
         this.textureCosmos = new Texture("bg.png");
         this.textureStar = new Texture("star16.png");
         
