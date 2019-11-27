@@ -13,7 +13,7 @@ public class BulletController extends ObjectPool<Bullet> {
 
     @Override
     protected Bullet newObject() {
-        return new Bullet();
+        return new Bullet(gc);
     }
 
     public BulletController(GameController gc){
@@ -31,8 +31,8 @@ public class BulletController extends ObjectPool<Bullet> {
     }
 
     //vx - скорость, vy - направление
-    public void setup(float x, float y, float vx, float vy){
-        getActiveElement().activate(x, y, vx, vy, gc.getHero().getAngle());
+    public void setup(float x, float y, float vx, float vy, float angle){
+        getActiveElement().activate(x, y, vx, vy, angle);
     }
 
     public void update(float dt){

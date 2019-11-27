@@ -33,17 +33,11 @@ public class WorldRenderer {
         batch.begin();
         gc.getBackgrond().render(batch);
         gc.getAsteroidController().render(batch);
-        //gc.getAsteroid().render(batch);
         gc.getHero().render(batch);
         gc.getBulletController().render(batch);
-
-        strBuilder.clear();
-        strBuilder.append("SCORE: ").append(gc.getHero().getScoreView());
-        font32.draw(batch, strBuilder, ScreenManager.SCREEN_WIDTH * 3 / 100, ScreenManager.SCREEN_HEIGHT * 97 / 100);
-
-        strHeroHp.clear();
-        strHeroHp.append(gc.getHero().getHpView());
-        font16.draw(batch, strHeroHp, gc.getHero().getPosition().x + 20, gc.getHero().getPosition().y - 30);
+        gc.getParticleController().render(batch);
+        gc.getBonusController().render(batch);
+        gc.getHero().renderGUI(batch, font32);
 
         if(gc.getHero().getHp() <= 0){
             strGameOver.clear();

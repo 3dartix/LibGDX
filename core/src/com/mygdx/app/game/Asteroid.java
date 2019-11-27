@@ -51,13 +51,23 @@ public class Asteroid implements Poolable {
 
     public boolean takeDamage(int amount){
         hp -= amount;
-        if(hp <= 0){
+        if (hp <= 0) {
+
             deactivate();
-            if(scale > 0.25f){
-                gc.getAsteroidController().setup(position.x,position.y,MathUtils.random(-80,80),MathUtils.random(-80,80),scale - 0.2f);
-                gc.getAsteroidController().setup(position.x,position.y,MathUtils.random(-80,80),MathUtils.random(-80,80),scale - 0.2f);
-                gc.getAsteroidController().setup(position.x,position.y,MathUtils.random(-80,80),MathUtils.random(-80,80),scale - 0.2f);
+            if (scale > 0.9f) {
+                gc.getAsteroidController().setup(position.x, position.y, MathUtils.random(-100.0f, 100.0f), MathUtils.random(-100.0f, 100.0f), scale - 0.2f);
+                gc.getAsteroidController().setup(position.x, position.y, MathUtils.random(-100.0f, 100.0f), MathUtils.random(-100.0f, 100.0f), scale - 0.2f);
+            } else if (scale > 0.25f) {
+                gc.getAsteroidController().setup(position.x, position.y, MathUtils.random(-100.0f, 100.0f), MathUtils.random(-100.0f, 100.0f), scale - 0.2f);
+                gc.getAsteroidController().setup(position.x, position.y, MathUtils.random(-100.0f, 100.0f), MathUtils.random(-100.0f, 100.0f), scale - 0.2f);
+                gc.getAsteroidController().setup(position.x, position.y, MathUtils.random(-100.0f, 100.0f), MathUtils.random(-100.0f, 100.0f), scale - 0.2f);
             }
+
+            //бросаем кубик для бонуса
+            if(MathUtils.random(0, 100) < scale * 50) {
+                gc.getBonusController().setup(position.x,position.y,MathUtils.random(-20f, 20f), MathUtils.random(-20f, 20f));
+            }
+
             return true;
         }
         return false;
