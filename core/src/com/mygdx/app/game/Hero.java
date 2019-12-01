@@ -1,8 +1,6 @@
 package com.mygdx.app.game;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -13,10 +11,12 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.StringBuilder;
 import com.mygdx.app.screen.ScreenManager;
 import com.mygdx.app.screen.utils.Assets;
+import com.mygdx.app.screen.utils.OptionsUtils;
 
 public class Hero {
     private GameController gc;
     private TextureRegion texture;
+    private KeysControl keysControl;
     private Vector2 position;
     private Vector2 velocity;
     //private Vector2 lastDisplacement;
@@ -27,7 +27,7 @@ public class Hero {
     private int scoreView;
     private StringBuilder strBuilder;
     private Weapon currentWeapon;
-    private int coins;
+    private int money;
     private int hp;
     private Circle hitArea;
 
@@ -50,7 +50,7 @@ public class Hero {
         return hp;
     }
 
-    public Hero(GameController gc){
+    public Hero(GameController gc, String keysControlPrefix){
         this.gc = gc;
         this.texture = Assets.getInstance().getAtlas().findRegion("ship");
         this.position = new Vector2(ScreenManager.SCREEN_WIDTH/2, ScreenManager.SCREEN_HEIGHT/2);
@@ -58,14 +58,16 @@ public class Hero {
         this.angle = 0;
         this.hitArea = new Circle(position.x,position.y,26);
         this.hp = 100;
-        this.coins = 0;
+        this.money = 0;
         this.strBuilder = new StringBuilder();
+        this.keysControl = new KeysControl(OptionsUtils.loadProperties(), keysControlPrefix);
+
         this.currentWeapon = new Weapon(
                 gc, this, "Laser", 0.2f, 1, 600, 100,
                 new Vector3[]{
                         new Vector3(28,0, 0), // нос
-                        new Vector3(28,90, 90), // бок1
-                        new Vector3(28,-90, -90), // бок2
+                        new Vector3(28,90, 20), // бок1
+                        new Vector3(28,-90, -20), // бок2
                 }
         );
     }
@@ -77,11 +79,25 @@ public class Hero {
         }
     }
 
-    public void takeBonus(Bonus bonus){
-        currentWeapon.AddBullet(bonus.getBullets());
-        hp += bonus.getHp();
-        coins += bonus.getMoney();
+    public void consume(PowerUp p) {
+        switch (p.getType()) {
+            case MEDKIT: // todo add max hp check
+                hp += p.getPower();
+                break;
+            case AMMOS:
+                currentWeapon.addAmmos(p.getPower());
+                break;
+            case MONEY:
+                money += p.getPower();
+                break;
+        }
     }
+
+//    public void takeBonus(PowerUp bonus){
+//        currentWeapon.addAmmos(bonus.getBullets());
+//        hp += bonus.getHp();
+//        money += bonus.getMoney();
+//    }
 
     public void render(SpriteBatch batch) {
         batch.draw(texture, position.x - 32, position.y - 32,32,32, 64,64,1,1,angle);
@@ -92,7 +108,7 @@ public class Hero {
         strBuilder.append("SCORE: ").append(scoreView).append("\n");
         strBuilder.append("HP: ").append(hp).append("\n");
         strBuilder.append("Bullets: ").append(currentWeapon.getCurBullets()).append("\n");
-        strBuilder.append("Coins: ").append(coins);
+        strBuilder.append("Coins: ").append(money);
         font.draw(batch, strBuilder, ScreenManager.SCREEN_WIDTH * 3 / 100, ScreenManager.SCREEN_HEIGHT * 97 / 100);
     }
 
@@ -102,19 +118,19 @@ public class Hero {
 
 
 
-        if(Gdx.input.isKeyPressed(Input.Keys.P)){
+        if(Gdx.input.isKeyPressed(keysControl.fire)){
             tryToFire();
         }
-        if(Gdx.input.isKeyPressed(Input.Keys.A)){
+        if(Gdx.input.isKeyPressed(keysControl.left)){
             angle += 180 * dt;
         }
-        if(Gdx.input.isKeyPressed(Input.Keys.D)){
+        if(Gdx.input.isKeyPressed(keysControl.right)){
             angle -= 180 * dt;
         }
-        if(Gdx.input.isKeyPressed(Input.Keys.W)){
+        if(Gdx.input.isKeyPressed(keysControl.forward)){
             velocity.x += (float)Math.cos(Math.toRadians(angle)) * acceleration * dt;
             velocity.y += (float)Math.sin(Math.toRadians(angle)) * acceleration * dt;
-        } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+        } else if (Gdx.input.isKeyPressed(keysControl.backward)) {
             velocity.x -= (float)Math.cos(Math.toRadians(angle)) * acceleration * dt;
             velocity.y -= (float)Math.sin(Math.toRadians(angle)) * acceleration * dt;
         }

@@ -11,17 +11,17 @@ public class GameController {
     private ParticleController particleController;
     private Hero hero;
     private AsteroidController asteroidController;
-    private BonusController bonusController;
+    private PowerUpsController powerUpsController;
     private Vector2 tmpVec; // Вектор для столкновений
 
     public GameController() {
         this.backgrond = new Background(this);
-        this.hero = new Hero(this);
+        this.hero = new Hero(this, "PLAYER1");
         this.asteroidController = new AsteroidController(this,2);
         this.bulletController = new BulletController(this);
         this.tmpVec = new Vector2(0,0);
         this.particleController = new ParticleController();
-        this.bonusController = new BonusController();
+        this.powerUpsController = new PowerUpsController(this);
     }
 
     public AsteroidController getAsteroidController() {
@@ -34,8 +34,8 @@ public class GameController {
         return backgrond;
     }
 
-    public BonusController getBonusController() {
-        return bonusController;
+    public PowerUpsController getBonusController() {
+        return powerUpsController;
     }
 
     public ParticleController getParticleController() {
@@ -52,7 +52,7 @@ public class GameController {
         bulletController.update(dt);
         asteroidController.update(dt);
         particleController.update(dt);
-        bonusController.update(dt);
+        powerUpsController.update(dt);
         checkCollisions();
         //checkHeroCollisions();
 
@@ -104,6 +104,10 @@ public class GameController {
                     b.deactivate();
                     if(a.takeDamage(1)){
                         hero.addScore(a.getHpMax()* 100);
+                        // бросаем бонус
+                        for (int k = 0; k < 3; k++) {
+                            powerUpsController.setup(a.getPosition().x, a.getPosition().y, a.getScale() / 4.0f);
+                        }
                     }
                     break;
                 }
@@ -111,13 +115,18 @@ public class GameController {
         }
 
         //коллиз с бонус.
-        for (int i = 0; i < bonusController.getActiveList().size(); i++) {
-            Bonus b = bonusController.getActiveList().get(i);
-            if(b.getHitArea().overlaps(hero.getHitArea())){
-                hero.takeBonus(b);
-                b.deactivate();
+        for (int i = 0; i < powerUpsController.getActiveList().size(); i++) {
+            PowerUp p = powerUpsController.getActiveList().get(i);
+            if (hero.getHitArea().contains(p.getPosition())) {
+                hero.consume(p);
+                //вызываем эффект при подъеме бонуса
+                particleController.getEffectBuilder().takePowerUpEffect(p.getPosition().x, p.getPosition().y);
+                p.deactivate();
             }
         }
+    }
 
+    public void dispose(){
+        backgrond.dispose();
     }
 }

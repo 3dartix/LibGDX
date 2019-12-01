@@ -35,11 +35,17 @@ public class Assets {
 
     public void loadAssets(ScreenManager.ScreenType type) {
         switch (type) {
+            case MENU:
+                //загруз атласа текстур
+                assetManager.load("images/game.pack", TextureAtlas.class);
+                createStandardFont(72);
+                createStandardFont(24);
+                break;
             case GAME:
                 //загружаем атлас текстур
                 assetManager.load("images/game.pack", TextureAtlas.class);
-                createStandardFont32(32);
-                createStandardFont32(16);
+                createStandardFont(32);
+                createStandardFont(16);
                 //ожидаем пока текстура зарузится
                 assetManager.finishLoading();
                 //получаем загруженный атлас
@@ -48,7 +54,8 @@ public class Assets {
         }
     }
 
-    private void createStandardFont32(int size) {
+    //создание шрифтов
+    private void createStandardFont(int size) {
         FileHandleResolver resolver = new InternalFileHandleResolver();
         assetManager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
         assetManager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
@@ -62,9 +69,10 @@ public class Assets {
         assetManager.load("fonts/font" + size + ".ttf", BitmapFont.class, fontParameter);
     }
 
-//    public void makeLinks() {
-//        textureAtlas = assetManager.get("images/game.pack", TextureAtlas.class);
-//    }
+    //Достает ссылку на атлас
+    public void makeLinks() {
+        textureAtlas = assetManager.get("images/game.pack", TextureAtlas.class);
+    }
 
     public void clear() {
         assetManager.clear();

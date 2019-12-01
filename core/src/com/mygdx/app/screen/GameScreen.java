@@ -8,10 +8,9 @@ import com.mygdx.app.screen.utils.Assets;
 public class GameScreen extends AbstractScreen {
     private GameController gameController;
     private WorldRenderer worldRenderer;
-    private SpriteBatch batch;
 
     public GameScreen(SpriteBatch batch) {
-        this.batch = batch;
+        super(batch);
     }
 
 
@@ -32,5 +31,10 @@ public class GameScreen extends AbstractScreen {
     public void render(float delta) {
         gameController.update(delta);
         worldRenderer.render();
+    }
+
+    @Override
+    public void dispose(){
+        gameController.dispose();
     }
 }
