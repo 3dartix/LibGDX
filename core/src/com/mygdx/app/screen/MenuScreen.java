@@ -1,7 +1,6 @@
 package com.mygdx.app.screen;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -12,17 +11,16 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.mygdx.app.game.Background;
+import com.mygdx.app.game.GameController;
 import com.mygdx.app.screen.utils.Assets;
 import com.mygdx.app.screen.utils.OptionsUtils;
 
-import java.io.IOException;
-import java.util.Properties;
 
 public class MenuScreen extends AbstractScreen {
     private Background background;
     private BitmapFont font72;
     private BitmapFont font24;
-    private Stage stage; //сцена
+    private Stage stage; //сцена c кнопками
 
     public MenuScreen(SpriteBatch batch) {
         super(batch);
@@ -89,10 +87,11 @@ public class MenuScreen extends AbstractScreen {
         //задаем фон и пишем текст
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
         batch.begin();
         background.render(batch);
         //выравниваем надпись по центру
-        font72.draw(batch, "Star Game 2019", 0, 600, ScreenManager.SCREEN_WIDTH, 1, false);
+        font72.draw(batch, "Star Game 2019", 0, ScreenManager.HALF_SCREEN_HEIGHT * 1.5f, ScreenManager.SCREEN_WIDTH, 1, false);
 
         batch.end();
         //рисуем сцену

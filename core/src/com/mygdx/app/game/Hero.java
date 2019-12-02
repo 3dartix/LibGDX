@@ -46,8 +46,9 @@ public class Hero {
     public Vector2 getPosition() {
         return position;
     }
-    public int getHp() {
-        return hp;
+
+    public int getScoreView() {
+        return scoreView;
     }
 
     public Hero(GameController gc, String keysControlPrefix){
@@ -93,12 +94,6 @@ public class Hero {
         }
     }
 
-//    public void takeBonus(PowerUp bonus){
-//        currentWeapon.addAmmos(bonus.getBullets());
-//        hp += bonus.getHp();
-//        money += bonus.getMoney();
-//    }
-
     public void render(SpriteBatch batch) {
         batch.draw(texture, position.x - 32, position.y - 32,32,32, 64,64,1,1,angle);
     }
@@ -115,8 +110,6 @@ public class Hero {
     public void update(float dt){
         fireTimer += dt;
         updateScore(dt);
-
-
 
         if(Gdx.input.isKeyPressed(keysControl.fire)){
             tryToFire();
@@ -162,6 +155,10 @@ public class Hero {
 
         hitArea.setPosition(position.x, position.y);
         checkSpaceBorder();
+
+        if(hp < 0){
+            ScreenManager.getInstance().changeScreen(ScreenManager.ScreenType.GAMEOVER);
+        }
     }
 
     public void tryToFire(){

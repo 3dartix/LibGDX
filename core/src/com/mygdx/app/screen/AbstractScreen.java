@@ -2,6 +2,7 @@ package com.mygdx.app.screen;
 
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.mygdx.app.game.GameController;
 
 public abstract class AbstractScreen implements Screen {
     protected SpriteBatch batch;

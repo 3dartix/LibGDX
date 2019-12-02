@@ -51,6 +51,12 @@ public class Assets {
                 //получаем загруженный атлас
                 textureAtlas = assetManager.get("images/game.pack", TextureAtlas.class);
                 break;
+            case GAMEOVER:
+                //загруз атласа текстур
+                assetManager.load("images/game.pack", TextureAtlas.class);
+                createStandardFont(72);
+                createStandardFont(24);
+                break;
         }
     }
 

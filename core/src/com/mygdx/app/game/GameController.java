@@ -104,6 +104,7 @@ public class GameController {
                     b.deactivate();
                     if(a.takeDamage(1)){
                         hero.addScore(a.getHpMax()* 100);
+                        GlobalStatistic.getInstance().addTotalScore(a.getHpMax()* 100);
                         // бросаем бонус
                         for (int k = 0; k < 3; k++) {
                             powerUpsController.setup(a.getPosition().x, a.getPosition().y, a.getScale() / 4.0f);

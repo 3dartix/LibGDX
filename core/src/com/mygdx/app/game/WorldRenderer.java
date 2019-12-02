@@ -39,12 +39,6 @@ public class WorldRenderer {
         gc.getBonusController().render(batch);
         gc.getHero().renderGUI(batch, font32);
 
-        if(gc.getHero().getHp() <= 0){
-            strGameOver.clear();
-            strGameOver.append("GAME OVER");
-            font32.draw(batch, strGameOver, ScreenManager.SCREEN_WIDTH/2, ScreenManager.SCREEN_HEIGHT/2);
-        }
-
         batch.end();
     }
 }

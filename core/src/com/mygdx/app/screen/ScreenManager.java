@@ -11,7 +11,7 @@ import com.mygdx.app.screen.utils.Assets;
 
 public class ScreenManager {
     public enum ScreenType {
-        MENU, GAME
+        MENU, GAME, GAMEOVER
     }
 
     public static final int SCREEN_WIDTH = 1000;
@@ -24,9 +24,11 @@ public class ScreenManager {
     private LoadingScreen loadingScreen;
     private GameScreen gameScreen;
     private MenuScreen menuScreen;
+    private GameOverScreen gameOverScreen;
     private Screen targetScreen;
     private Viewport viewport;
     private Camera camera;
+    private boolean gamePause;
 
     private static ScreenManager ourInstance = new ScreenManager();
 
@@ -42,7 +44,20 @@ public class ScreenManager {
         return camera;
     }
 
+    //пауза игры dt = 0;
+    public boolean isGamePause() {
+        return gamePause;
+    }
+    public void setGamePause() {
+        if(this.gamePause) {
+            this.gamePause = false;
+        } else {
+            this.gamePause = true;
+        }
+    }
+
     private ScreenManager() {
+        gamePause = false;
     }
 
     public void init(StarGame game, SpriteBatch batch) {
@@ -51,8 +66,10 @@ public class ScreenManager {
         this.camera = new OrthographicCamera(SCREEN_WIDTH, SCREEN_HEIGHT);
         //отвечает за выравнивание экрана (растягивает с сохранение заданнных пропорций)
         this.viewport = new FitViewport(SCREEN_WIDTH, SCREEN_HEIGHT, camera);
+        //создаем экраны
         this.gameScreen = new GameScreen(batch);
         this.menuScreen = new MenuScreen(batch);
+        this.gameOverScreen = new GameOverScreen(batch);
         this.loadingScreen = new LoadingScreen(batch);
     }
 
@@ -94,6 +111,10 @@ public class ScreenManager {
             case MENU:
                 targetScreen = menuScreen;
                 Assets.getInstance().loadAssets(ScreenType.MENU);
+                break;
+            case GAMEOVER:
+                targetScreen = gameOverScreen;
+                Assets.getInstance().loadAssets(ScreenType.GAMEOVER);
                 break;
         }
     }
