@@ -1,6 +1,7 @@
 package com.mygdx.app.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -8,12 +9,58 @@ import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.StringBuilder;
 import com.mygdx.app.screen.ScreenManager;
 import com.mygdx.app.screen.utils.Assets;
 import com.mygdx.app.screen.utils.OptionsUtils;
 
 public class Hero {
+    public class Skill {
+        private int level;
+        private int maxLevel;
+        private String title;
+        private Runnable[] effects;
+        private int[] cost;
+
+        public int getLevel() {
+            return level;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public int getMaxLevel() {
+            return maxLevel;
+        }
+
+        public int getCurrentLevelCost() {
+            return cost[level - 1];
+        }
+
+        public Skill(String title, Runnable[] effects, int[] cost) {
+            this.level = 1;
+            this.title = title;
+            this.effects = effects;
+            this.cost = cost;
+            this.maxLevel = effects.length;
+            if (effects.length != cost.length) {
+                throw new RuntimeException("Unable to create skill tree");
+            }
+        }
+
+        public boolean isUpgradable() {
+            return level < effects.length + 1;
+        }
+
+        public void upgrade() {
+            effects[level - 1].run();
+            level++;
+        }
+    }
+
+    private Skill[] skills;
     private GameController gc;
     private TextureRegion texture;
     private KeysControl keysControl;
@@ -29,7 +76,9 @@ public class Hero {
     private Weapon currentWeapon;
     private int money;
     private int hp;
+    private int hpMax;
     private Circle hitArea;
+    private Shop shop;
 
     public Vector2 getVelocity() {
         return velocity;
@@ -46,6 +95,12 @@ public class Hero {
     public Vector2 getPosition() {
         return position;
     }
+    public boolean isAlive() {
+        return hp > 0;
+    }
+    public int getScore() {
+        return score;
+    }
 
     public int getScoreView() {
         return scoreView;
@@ -58,10 +113,13 @@ public class Hero {
         this.velocity = new Vector2(0,0);
         this.angle = 0;
         this.hitArea = new Circle(position.x,position.y,26);
-        this.hp = 100;
-        this.money = 0;
+        this.hpMax = 100;
+        this.hp = hpMax;
+        this.money = 10000;
         this.strBuilder = new StringBuilder();
         this.keysControl = new KeysControl(OptionsUtils.loadProperties(), keysControlPrefix);
+        this.createSkillsTable();
+        this.shop = new Shop(this);
 
         this.currentWeapon = new Weapon(
                 gc, this, "Laser", 0.2f, 1, 600, 100,
@@ -75,15 +133,29 @@ public class Hero {
 
     public void takeDamag(int amount){
         hp -= amount;
-        if(hp <= 0){
-            //игра окончена
-        }
+    }
+
+    public Skill[] getSkills() {
+        return skills;
+    }
+    public Shop getShop() {
+        return shop;
+    }
+    public boolean isMoneyEnough(int amount) {
+        return money >= amount;
+    }
+
+    public void decreaseMoney(int amount) {
+        money -= amount;
     }
 
     public void consume(PowerUp p) {
         switch (p.getType()) {
             case MEDKIT: // todo add max hp check
                 hp += p.getPower();
+                if (hp > hpMax) {
+                    hp = hpMax;
+                }
                 break;
             case AMMOS:
                 currentWeapon.addAmmos(p.getPower());
@@ -101,7 +173,7 @@ public class Hero {
     public void renderGUI(SpriteBatch batch, BitmapFont font){
         strBuilder.clear();
         strBuilder.append("SCORE: ").append(scoreView).append("\n");
-        strBuilder.append("HP: ").append(hp).append("\n");
+        strBuilder.append("HP: ").append(hp).append(" / ").append(hpMax).append("\n");
         strBuilder.append("Bullets: ").append(currentWeapon.getCurBullets()).append("\n");
         strBuilder.append("Coins: ").append(money);
         font.draw(batch, strBuilder, ScreenManager.SCREEN_WIDTH * 3 / 100, ScreenManager.SCREEN_HEIGHT * 97 / 100);
@@ -128,8 +200,10 @@ public class Hero {
             velocity.y -= (float)Math.sin(Math.toRadians(angle)) * acceleration * dt;
         }
 
-        //position.x += velocity.x * dt;
-        //position.y += velocity.y * dt;
+        if (Gdx.input.isKeyJustPressed(Input.Keys.U)) {
+            shop.setVisible(true);
+        }
+
         position.mulAdd(velocity, dt);
 
         float stopKoef = 1 - 2 * dt;
@@ -155,10 +229,6 @@ public class Hero {
 
         hitArea.setPosition(position.x, position.y);
         checkSpaceBorder();
-
-        if(hp < 0){
-            ScreenManager.getInstance().changeScreen(ScreenManager.ScreenType.GAMEOVER);
-        }
     }
 
     public void tryToFire(){
@@ -166,6 +236,77 @@ public class Hero {
             fireTimer = 0.0f;
             currentWeapon.fire();
         }
+    }
+
+    public void upgrade(int index) {
+        int level = this.skills[index].level;
+        this.skills[index].effects[level - 1].run();
+        this.skills[index].level++;
+    }
+
+    public void createSkillsTable() {
+        this.skills = new Skill[2];
+        skills[0] = new Skill("HP",
+                new Runnable[]{
+                        () -> hpMax += 10,
+                        () -> hpMax += 20,
+                        () -> hpMax += 30,
+                        () -> hpMax += 40,
+                        () -> hpMax += 50,
+                        () -> hpMax += 50
+                },
+                new int[]{
+                        10,
+                        20,
+                        30,
+                        50,
+                        100,
+                        500
+                }
+        );
+
+        skills[1] = new Skill("WX-I",
+                new Runnable[]{
+                        () -> {
+                            this.currentWeapon = new Weapon(
+                                    gc, this, "Laser", 0.3f, 1, 600.0f, 320,
+                                    new Vector3[]{
+                                            new Vector3(24, 90, 10),
+                                            new Vector3(24, 0, 0),
+                                            new Vector3(24, -90, -10)
+                                    }
+                            );
+                        },
+                        () -> {
+                            this.currentWeapon = new Weapon(
+                                    gc, this, "Laser", 0.3f, 1, 600.0f, 320,
+                                    new Vector3[]{
+                                            new Vector3(24, 90, 20),
+                                            new Vector3(24, 20, 0),
+                                            new Vector3(24, -20, 0),
+                                            new Vector3(24, -90, -20)
+                                    }
+                            );
+                        },
+                        () -> {
+                            this.currentWeapon = new Weapon(
+                                    gc, this, "Laser", 0.05f, 2, 600.0f, 32000,
+                                    new Vector3[]{
+                                            new Vector3(24, 90, 20),
+                                            new Vector3(24, 20, 0),
+                                            new Vector3(24, 0, 0),
+                                            new Vector3(24, -20, 0),
+                                            new Vector3(24, -90, -20)
+                                    }
+                            );
+                        }
+                },
+                new int[]{
+                        100,
+                        200,
+                        300
+                }
+        );
     }
 
     public void checkSpaceBorder(){
@@ -186,7 +327,6 @@ public class Hero {
             velocity.y *= -1; //меняем вектор в другую сторону (отскок)
         }
     }
-
     public void updateScore(float dt){
         if (scoreView < score) {
             float scoreSpeed = (score - scoreView) / 2.0f;
@@ -199,5 +339,4 @@ public class Hero {
             }
         }
     }
-
 }

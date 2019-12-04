@@ -1,5 +1,6 @@
 package com.mygdx.app.screen;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -7,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.app.StarGame;
+import com.mygdx.app.game.Hero;
 import com.mygdx.app.screen.utils.Assets;
 
 public class ScreenManager {
@@ -14,9 +16,9 @@ public class ScreenManager {
         MENU, GAME, GAMEOVER
     }
 
-    public static final int SCREEN_WIDTH = 1000;
+    public static final int SCREEN_WIDTH = 1360;
     public static final int HALF_SCREEN_WIDTH = SCREEN_WIDTH / 2;
-    public static final int SCREEN_HEIGHT = 600;
+    public static final int SCREEN_HEIGHT = 720;
     public static final int HALF_SCREEN_HEIGHT = SCREEN_HEIGHT / 2;
 
     private StarGame game;
@@ -28,7 +30,7 @@ public class ScreenManager {
     private Screen targetScreen;
     private Viewport viewport;
     private Camera camera;
-    private boolean gamePause;
+    //private boolean gamePause;
 
     private static ScreenManager ourInstance = new ScreenManager();
 
@@ -45,19 +47,19 @@ public class ScreenManager {
     }
 
     //пауза игры dt = 0;
-    public boolean isGamePause() {
-        return gamePause;
-    }
-    public void setGamePause() {
-        if(this.gamePause) {
-            this.gamePause = false;
-        } else {
-            this.gamePause = true;
-        }
-    }
+//    public boolean isGamePause() {
+//        return gamePause;
+//    }
+//    public void setGamePause() {
+//        if(this.gamePause) {
+//            this.gamePause = false;
+//        } else {
+//            this.gamePause = true;
+//        }
+//    }
 
     private ScreenManager() {
-        gamePause = false;
+        //gamePause = false;
     }
 
     public void init(StarGame game, SpriteBatch batch) {
@@ -88,11 +90,14 @@ public class ScreenManager {
     }
 
     //заставляет игру перейти на какой-то экран
-    public void changeScreen(ScreenType type) {
+    public void changeScreen(ScreenType type, Object... args) {
         //послучаем ссылку на текущий экран
         Screen screen = game.getScreen();
         //чистим все ресурсы
         Assets.getInstance().clear();
+        //????
+        Gdx.input.setInputProcessor(null);
+
         if (screen != null) {
             //если вдруг остались какие-то элементы на которые у нас нет ссылок уничтожаем (напр звуки)
             screen.dispose();
@@ -114,6 +119,7 @@ public class ScreenManager {
                 break;
             case GAMEOVER:
                 targetScreen = gameOverScreen;
+                gameOverScreen.setDefeatedHero((Hero)args[0]);
                 Assets.getInstance().loadAssets(ScreenType.GAMEOVER);
                 break;
         }

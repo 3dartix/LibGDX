@@ -46,6 +46,7 @@ public class Assets {
                 assetManager.load("images/game.pack", TextureAtlas.class);
                 createStandardFont(32);
                 createStandardFont(16);
+                createStandardFont(24);
                 //ожидаем пока текстура зарузится
                 assetManager.finishLoading();
                 //получаем загруженный атлас
@@ -56,6 +57,7 @@ public class Assets {
                 assetManager.load("images/game.pack", TextureAtlas.class);
                 createStandardFont(72);
                 createStandardFont(24);
+                createStandardFont(48);
                 break;
         }
     }

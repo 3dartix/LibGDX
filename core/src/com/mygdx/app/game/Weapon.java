@@ -58,7 +58,7 @@ public class Weapon {
                 gc.getBulletController().setup(x, y, vx, vy, hero.getAngle() + slots[i].z);
             }
 
-            GlobalStatistic.getInstance().addShot();
+            //GlobalStatistic.getInstance().addShot();
         }
     }
 

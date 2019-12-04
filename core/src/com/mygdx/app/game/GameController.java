@@ -2,8 +2,13 @@ package com.mygdx.app.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.mygdx.app.screen.ScreenManager;
+
+import static java.lang.Math.*;
 
 public class GameController {
     private Background backgrond;
@@ -13,15 +18,19 @@ public class GameController {
     private AsteroidController asteroidController;
     private PowerUpsController powerUpsController;
     private Vector2 tmpVec; // Вектор для столкновений
+    private Stage stage;
 
-    public GameController() {
+    public GameController(SpriteBatch batch) {
         this.backgrond = new Background(this);
         this.hero = new Hero(this, "PLAYER1");
         this.asteroidController = new AsteroidController(this,2);
         this.bulletController = new BulletController(this);
         this.tmpVec = new Vector2(0,0);
+        this.stage = new Stage(ScreenManager.getInstance().getViewport(), batch);
         this.particleController = new ParticleController();
         this.powerUpsController = new PowerUpsController(this);
+        this.stage.addActor(hero.getShop());
+        Gdx.input.setInputProcessor(stage);
     }
 
     public AsteroidController getAsteroidController() {
@@ -32,6 +41,9 @@ public class GameController {
     }
     public Background getBackgrond() {
         return backgrond;
+    }
+    public Stage getStage() {
+        return stage;
     }
 
     public PowerUpsController getBonusController() {
@@ -54,11 +66,10 @@ public class GameController {
         particleController.update(dt);
         powerUpsController.update(dt);
         checkCollisions();
-        //checkHeroCollisions();
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)){
-            Gdx.app.exit();
+        if(!hero.isAlive()) {
+            ScreenManager.getInstance().changeScreen(ScreenManager.ScreenType.GAMEOVER, hero);
         }
+        stage.act(dt);
     }
 
     public void checkCollisions(){
@@ -72,11 +83,7 @@ public class GameController {
                 hero.getPosition().mulAdd(tmpVec, halfOverLen); //tmpVec * halfOverLen
                 a.getPosition().mulAdd(tmpVec, -halfOverLen); //tmpVec * halfOverLen
 
-                float sumScl = hero.getHitArea().radius * 2 + a.getHitArea().radius;
-
-                //если радиус астер усл 10 у гер 1, то гер ускорится в 10 раз быстрее, чем астер
-                hero.getVelocity().mulAdd(tmpVec, 100 * halfOverLen * a.getHitArea().radius/sumScl); // герой получит ускорение равное своему радиусу делен на общий
-                a.getVelocity().mulAdd(tmpVec, 100 * -halfOverLen * hero.getHitArea().radius/sumScl);
+                hit(hero, a);
 
                 if(a.takeDamage(2)){
                     hero.addScore(a.getHpMax()* 10);
@@ -104,7 +111,7 @@ public class GameController {
                     b.deactivate();
                     if(a.takeDamage(1)){
                         hero.addScore(a.getHpMax()* 100);
-                        GlobalStatistic.getInstance().addTotalScore(a.getHpMax()* 100);
+                        //GlobalStatistic.getInstance().addTotalScore(a.getHpMax()* 100);
                         // бросаем бонус
                         for (int k = 0; k < 3; k++) {
                             powerUpsController.setup(a.getPosition().x, a.getPosition().y, a.getScale() / 4.0f);
@@ -125,6 +132,34 @@ public class GameController {
                 p.deactivate();
             }
         }
+    }
+
+    // столкновение астероида и героя
+    public void hit(Hero h, Asteroid a) {
+        // h - 1
+        // a - 2
+        //длины скоростей героя и астероида
+        float v1 = h.getVelocity().len();
+        float v2 = a.getVelocity().len();
+        // находим их массы
+        float m1 = 0.1f;
+        float m2 = a.getScale();
+        //направление вектора скорости
+        float th1 = h.getVelocity().angleRad();
+        float th2 = a.getVelocity().angleRad();
+        //угол от игрока в сторону астероида
+        float phi1 = tmpVec.set(a.getPosition()).sub(h.getPosition()).angleRad();
+        //угол от астероида в сторону игрока
+        float phi2 = tmpVec.set(h.getPosition()).sub(a.getPosition()).angleRad();
+        //новые скорости персонажа
+        float v1xN = (float) (((v1 * cos(th1 - phi1) * (m1 - m2) + 2 * m2 * v2 * cos(th2 - phi1)) / (m1 + m2)) * cos(phi1) + v1 * sin(th1 - phi1) * cos(phi1 + PI / 2.0f));
+        float v1yN = (float) (((v1 * cos(th1 - phi1) * (m1 - m2) + 2 * m2 * v2 * cos(th2 - phi1)) / (m1 + m2)) * sin(phi1) + v1 * sin(th1 - phi1) * sin(phi1 + PI / 2.0f));
+        //новые скорости астероида
+        float v2xN = (float) (((v2 * cos(th2 - phi2) * (m2 - m1) + 2 * m1 * v1 * cos(th1 - phi2)) / (m2 + m1)) * cos(phi2) + v2 * sin(th2 - phi2) * cos(phi2 + PI / 2.0f));
+        float v2yN = (float) (((v2 * cos(th2 - phi2) * (m2 - m1) + 2 * m1 * v1 * cos(th1 - phi2)) / (m2 + m1)) * sin(phi2) + v2 * sin(th2 - phi2) * sin(phi2 + PI / 2.0f));
+
+        h.getVelocity().set(v1xN, v1yN);
+        a.getVelocity().set(v2xN, v2yN);
     }
 
     public void dispose(){

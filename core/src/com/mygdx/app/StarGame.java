@@ -30,15 +30,17 @@ public class StarGame extends Game {
     public void render() {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        float dt = Gdx.graphics.getDeltaTime();
+        getScreen().render(dt);
 
         //управление паузой
-        if(!ScreenManager.getInstance().isGamePause()){
-            float dt = Gdx.graphics.getDeltaTime();
-            getScreen().render(dt);
-        } else {
-            float dt = 0;
-            getScreen().render(dt);
-        }
+//        if(!ScreenManager.getInstance().isGamePause()){
+//            float dt = Gdx.graphics.getDeltaTime();
+//            getScreen().render(dt);
+//        } else {
+//            float dt = 0;
+//            getScreen().render(dt);
+//        }
 
     }
 

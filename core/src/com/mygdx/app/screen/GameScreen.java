@@ -18,7 +18,7 @@ public class GameScreen extends AbstractScreen {
     private WorldRenderer worldRenderer;
     //дз 5 лекция
     //private BitmapFont font24;
-    private Stage stage; //сцена c кнопками
+    //private Stage stage; //сцена c кнопками
 
     public GameScreen(SpriteBatch batch) {
         super(batch);
@@ -31,61 +31,61 @@ public class GameScreen extends AbstractScreen {
         //загружаем текстуры
         Assets.getInstance().loadAssets(ScreenManager.ScreenType.GAME);
 
-        this.gameController = new GameController();
+        this.gameController = new GameController(batch);
         this.worldRenderer = new WorldRenderer(gameController, batch);
         //удаляем атлас из памяти
         //Assets.getInstance().getAtlas().dispose();
 
-        //дз 5 лекция
-        this.stage = new Stage(ScreenManager.getInstance().getViewport(), batch);
-        Gdx.input.setInputProcessor(stage);
-
-        Skin skin = new Skin();
-        skin.addRegions(Assets.getInstance().getAtlas());
-
-        //кнопка назад в меню
-        addBtn(skin, "smButton", new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                ScreenManager.getInstance().changeScreen(ScreenManager.ScreenType.MENU);
-            }
-        }, "Back to menu", 2,2);
-        //кнопка пауза
-        addBtn(skin, "smButton", new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                ScreenManager.getInstance().setGamePause();
-            }
-        }, "Pause", 125,2);
-        
-        skin.dispose();
+//        //дз 5 лекция
+//        this.stage = new Stage(ScreenManager.getInstance().getViewport(), batch);
+//        //Gdx.input.setInputProcessor(stage);
+//
+//        Skin skin = new Skin();
+//        skin.addRegions(Assets.getInstance().getAtlas());
+//
+//        //кнопка назад в меню
+//        addBtn(skin, "smButton", new ChangeListener() {
+//            @Override
+//            public void changed(ChangeEvent event, Actor actor) {
+//                ScreenManager.getInstance().changeScreen(ScreenManager.ScreenType.MENU);
+//            }
+//        }, "Back to menu", 2,2);
+//        //кнопка пауза
+//        addBtn(skin, "smButton", new ChangeListener() {
+//            @Override
+//            public void changed(ChangeEvent event, Actor actor) {
+//                //ScreenManager.getInstance().setGamePause();
+//            }
+//        }, "Pause", 125,2);
+//
+//        skin.dispose();
     }
 
-    void addBtn(Skin skin, String nameImg, ChangeListener event, String name, float posX, float posY){
-        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
-        textButtonStyle.up = skin.getDrawable(nameImg);
-        textButtonStyle.font = Assets.getInstance().getAssetManager().get("fonts/font16.ttf");
-        skin.add(nameImg, textButtonStyle);
-        //создаем и настр. кнопки
-        Button newBtn = new TextButton(name, textButtonStyle);
-        newBtn.setPosition(posX, posY);
-        //добавляем слушателя
-        newBtn.addListener(event);
-        stage.addActor(newBtn);
-    }
+//    void addBtn(Skin skin, String nameImg, ChangeListener event, String name, float posX, float posY){
+//        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
+//        textButtonStyle.up = skin.getDrawable(nameImg);
+//        textButtonStyle.font = Assets.getInstance().getAssetManager().get("fonts/font16.ttf");
+//        skin.add(nameImg, textButtonStyle);
+//        //создаем и настр. кнопки
+//        Button newBtn = new TextButton(name, textButtonStyle);
+//        newBtn.setPosition(posX, posY);
+//        //добавляем слушателя
+//        newBtn.addListener(event);
+//        stage.addActor(newBtn);
+//    }
 
     public void update(float dt){
-        stage.act(dt);
+        //stage.act(dt);
     }
 
     @Override
     public void render(float delta) {
-        update(delta);
+        //update(delta);
         gameController.update(delta);
         worldRenderer.render();
 
         //рисуем сцену
-        stage.draw();
+        //stage.draw();
     }
 
     @Override
