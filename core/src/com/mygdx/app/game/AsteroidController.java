@@ -15,15 +15,10 @@ public class AsteroidController extends ObjectPool<Asteroid> {
         return new Asteroid(gc);
     }
 
-    public AsteroidController(GameController gc, int amount){
+    public AsteroidController(GameController gc){
         this.gc = gc;
 //        TextureRegion[] a = new TextureRegion(Assets.getInstance().getAtlas().findRegion("asteroids64")).split(64, 64)[0];
 //        this.bulletTexture = a[0];
-        for (int i = 0; i < amount; i++) {
-            float posX = MathUtils.random(0, ScreenManager.SCREEN_WIDTH);
-            float posY = MathUtils.random(0, ScreenManager.SCREEN_HEIGHT);
-            setup(posX, posY, (float)Math.cos(Math.toRadians(MathUtils.random(0,360)))*MathUtils.random(30,60), (float)Math.sin(Math.toRadians(MathUtils.random(0,360)))*MathUtils.random(30,60),1f); //создание астероида
-        }
     }
 
     public void render(SpriteBatch batch){

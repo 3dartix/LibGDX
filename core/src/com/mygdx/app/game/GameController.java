@@ -19,11 +19,12 @@ public class GameController {
     private PowerUpsController powerUpsController;
     private Vector2 tmpVec; // Вектор для столкновений
     private Stage stage;
+    private int level;
 
     public GameController(SpriteBatch batch) {
         this.backgrond = new Background(this);
         this.hero = new Hero(this, "PLAYER1");
-        this.asteroidController = new AsteroidController(this,2);
+        this.asteroidController = new AsteroidController(this);
         this.bulletController = new BulletController(this);
         this.tmpVec = new Vector2(0,0);
         this.stage = new Stage(ScreenManager.getInstance().getViewport(), batch);
@@ -31,8 +32,12 @@ public class GameController {
         this.powerUpsController = new PowerUpsController(this);
         this.stage.addActor(hero.getShop());
         Gdx.input.setInputProcessor(stage);
+        LevelUP();
     }
 
+    public int getLevel() {
+        return level;
+    }
     public AsteroidController getAsteroidController() {
         return asteroidController;
     }
@@ -45,15 +50,12 @@ public class GameController {
     public Stage getStage() {
         return stage;
     }
-
     public PowerUpsController getBonusController() {
         return powerUpsController;
     }
-
     public ParticleController getParticleController() {
         return particleController;
     }
-
     public Hero getHero() {
         return hero;
     }
@@ -66,10 +68,31 @@ public class GameController {
         particleController.update(dt);
         powerUpsController.update(dt);
         checkCollisions();
+
+        if(isAsteroidsEnd()){
+            LevelUP();
+        }
+
         if(!hero.isAlive()) {
             ScreenManager.getInstance().changeScreen(ScreenManager.ScreenType.GAMEOVER, hero);
         }
         stage.act(dt);
+    }
+
+    public void LevelUP(){
+        this.level++;
+        for (int i = 0; i < level; i++) {
+            float posX = MathUtils.random(0, ScreenManager.SCREEN_WIDTH);
+            float posY = MathUtils.random(0, ScreenManager.SCREEN_HEIGHT);
+            this.asteroidController.setup(posX, posY, (float)Math.cos(Math.toRadians(MathUtils.random(0,360)))*MathUtils.random(30,60), (float)Math.sin(Math.toRadians(MathUtils.random(0,360)))*MathUtils.random(30,60),1f); //создание астероида
+        }
+    }
+
+    public boolean isAsteroidsEnd(){
+        if(asteroidController.getActiveList().size() == 0){
+          return true;
+        }
+        return false;
     }
 
     public void checkCollisions(){
@@ -125,16 +148,19 @@ public class GameController {
         //коллиз с бонус.
         for (int i = 0; i < powerUpsController.getActiveList().size(); i++) {
             PowerUp p = powerUpsController.getActiveList().get(i);
-            if (hero.getHitArea().contains(p.getPosition())) {
-                hero.consume(p);
-                //вызываем эффект при подъеме бонуса
-                particleController.getEffectBuilder().takePowerUpEffect(p.getPosition().x, p.getPosition().y);
-                p.deactivate();
+            if (hero.getHitArea().overlaps(p.getHitArea())) {
+                p.setNewVector(hero.getPosition());
+                if(hero.getHitArea().contains(p.getPosition())){
+                    hero.consume(p);
+                    //вызываем эффект при подъеме бонуса
+                    particleController.getEffectBuilder().takePowerUpEffect(p.getPosition().x, p.getPosition().y);
+                    p.deactivate();
+                }
             }
         }
     }
 
-    // столкновение астероида и героя
+    // столкновение астероида и героя (эластичное)
     public void hit(Hero h, Asteroid a) {
         // h - 1
         // a - 2

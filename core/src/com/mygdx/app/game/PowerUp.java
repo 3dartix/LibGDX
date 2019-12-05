@@ -1,5 +1,6 @@
 package com.mygdx.app.game;
 
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.app.game.helpers.Poolable;
@@ -22,6 +23,8 @@ public class PowerUp implements Poolable {
     private boolean active;
     private Type type;
     private int power;
+    private Circle hitArea;
+    Vector2 tmpVec;
 
     public Type getType() {
         return type;
@@ -29,6 +32,10 @@ public class PowerUp implements Poolable {
 
     public float getTime() {
         return time;
+    }
+
+    public Circle getHitArea() {
+        return hitArea;
     }
 
     public int getPower() {
@@ -57,6 +64,8 @@ public class PowerUp implements Poolable {
         this.position = new Vector2(0, 0);
         this.velocity = new Vector2(0, 0);
         this.active = false;
+        this.hitArea = new Circle();
+        this.tmpVec = new Vector2();
     }
 
     public void activate(Type type, float x, float y, int power) {
@@ -67,13 +76,21 @@ public class PowerUp implements Poolable {
         this.active = true;
         this.power = power;
         this.time = 0.0f;
+        this.hitArea.setRadius(100);
+        this.hitArea.setPosition(x, y);
+    }
+
+    public void setNewVector(Vector2 pos){
+        tmpVec.set(position).sub(pos);
+        velocity.set(tmpVec.scl(-1));
     }
 
     public void update(float dt) {
         position.mulAdd(velocity, dt);
         time += dt;
-        if (time >= 3.0f) {
+        if (time >= 50.0f) {
             deactivate();
         }
+        hitArea.setPosition(position.x, position.y);
     }
 }
