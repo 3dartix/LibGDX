@@ -78,6 +78,10 @@ public class GameScreen extends AbstractScreen {
         //stage.act(dt);
     }
 
+    public void shoWDamage(){
+
+    }
+
     @Override
     public void render(float delta) {
         //update(delta);

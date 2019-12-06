@@ -1,10 +1,12 @@
 package com.mygdx.app.game;
 
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.StringBuilder;
 import com.mygdx.app.game.helpers.Poolable;
 import com.mygdx.app.screen.ScreenManager;
 import com.mygdx.app.screen.utils.Assets;
@@ -23,6 +25,9 @@ public class Asteroid implements Poolable {
     private Circle hitArea;
     private final float BASE_SIZE = 256f;
     private final float BASE_RADIUS = BASE_SIZE / 2f;
+
+    private StringBuilder stringBuilder;
+    private float strTime = 5f;
 
     public int getHpMax() {
         return hpMax;
@@ -47,6 +52,7 @@ public class Asteroid implements Poolable {
         this.hp = 0;
         this.hitArea = new Circle(0,0,0);
         this.texture = Assets.getInstance().getAtlas().findRegion("asteroid");
+        this.stringBuilder = new StringBuilder();
     }
 
     public float getScale() {
@@ -100,6 +106,10 @@ public class Asteroid implements Poolable {
     }
 
     public void update(float dt){
+
+        strTime -= dt;
+        System.out.println(strTime);
+
         position.mulAdd(velocity,dt);
         angle += rotationSpeed * dt;
 

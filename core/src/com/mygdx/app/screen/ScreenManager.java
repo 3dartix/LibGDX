@@ -16,9 +16,9 @@ public class ScreenManager {
         MENU, GAME, GAMEOVER
     }
 
-    public static final int SCREEN_WIDTH = 1920;
+    public static final int SCREEN_WIDTH = 1366;
     public static final int HALF_SCREEN_WIDTH = SCREEN_WIDTH / 2;
-    public static final int SCREEN_HEIGHT = 1080;
+    public static final int SCREEN_HEIGHT = 760;
     public static final int HALF_SCREEN_HEIGHT = SCREEN_HEIGHT / 2;
 
     private StarGame game;
