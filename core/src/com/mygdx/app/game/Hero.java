@@ -2,6 +2,8 @@ package com.mygdx.app.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -60,6 +62,7 @@ public class Hero {
         }
     }
 
+    private TextureRegion starTexture;
     private Skill[] skills;
     private GameController gc;
     private TextureRegion texture;
@@ -79,6 +82,7 @@ public class Hero {
     private int hpMax;
     private Circle hitArea;
     private Shop shop;
+    private Vector2 tmpVector;
 
     public Vector2 getVelocity() {
         return velocity;
@@ -108,6 +112,7 @@ public class Hero {
 
     public Hero(GameController gc, String keysControlPrefix){
         this.gc = gc;
+        this.starTexture = Assets.getInstance().getAtlas().findRegion("star16");
         this.texture = Assets.getInstance().getAtlas().findRegion("ship");
         this.position = new Vector2(ScreenManager.SCREEN_WIDTH/2, ScreenManager.SCREEN_HEIGHT/2);
         this.velocity = new Vector2(0,0);
@@ -120,6 +125,7 @@ public class Hero {
         this.keysControl = new KeysControl(OptionsUtils.loadProperties(), keysControlPrefix);
         this.createSkillsTable();
         this.shop = new Shop(this);
+        this.tmpVector = new Vector2(0,0);
 
         this.currentWeapon = new Weapon(
                 gc, this, "Laser", 0.2f, 1, 600, 100,
@@ -177,9 +183,37 @@ public class Hero {
         strBuilder.append("Bullets: ").append(currentWeapon.getCurBullets()).append("\n");
         strBuilder.append("Coins: ").append(money);
         font.draw(batch, strBuilder, ScreenManager.SCREEN_WIDTH * 3 / 100, ScreenManager.SCREEN_HEIGHT * 97 / 100);
+
+        //миникарта
+        int mapX = 1700;
+        int mapY = 900;
+
+        batch.setColor(Color.GREEN);
+        batch.draw(starTexture, mapX - 24, mapY - 24, 48, 48);
+
+        batch.setColor(Color.RED);
+        for (int i = 0; i < gc.getAsteroidController().getActiveList().size(); i++) {
+            Asteroid a = gc.getAsteroidController().getActiveList().get(i);
+            float dst = position.dst(a.getPosition());
+            if (dst < 3000.0f) {
+                //в tmp кладем позицию астероида и вычитаем позицию игрока, т.е. определяем вектор от центра к астероиду
+                tmpVector.set(a.getPosition()).sub(this.position);
+                // масштабируем этот вектор из реального расстояния на расстояние карты
+                tmpVector.scl(160.0f / 3000.0f);
+                batch.draw(starTexture, mapX + tmpVector.x - 16, mapY + tmpVector.y - 16, 32, 32);
+            }
+        }
+        batch.setColor(Color.WHITE);
+        for (int i = 0; i < 120; i++) {
+            batch.draw(starTexture, mapX + 160.0f * MathUtils.cosDeg(360.0f / 120.0f * i) - 8, mapY + 160.0f * MathUtils.sinDeg(360.0f / 120.0f * i) - 8);
+        }
     }
 
     public void update(float dt){
+        if(velocity.len() > 1000f){
+            velocity.nor().scl(1000f);
+        }
+
         fireTimer += dt;
         updateScore(dt);
 
@@ -311,20 +345,24 @@ public class Hero {
 
     public void checkSpaceBorder(){
         if(position.x < hitArea.radius){
-            position.x = hitArea.radius;
-            velocity.x *= -1; //меняем вектор в другую сторону (отскок)
+            position.x += GameController.SPACE_WIDTH;
+            //position.x = hitArea.radius;
+            //velocity.x *= -1; //меняем вектор в другую сторону (отскок)
         }
-        if(position.x > ScreenManager.SCREEN_WIDTH - hitArea.radius){
-            position.x = ScreenManager.SCREEN_WIDTH - hitArea.radius;
-            velocity.x *= -1; //меняем вектор в другую сторону (отскок)
+        if(position.x > GameController.SPACE_WIDTH - hitArea.radius){
+            position.x -= GameController.SPACE_WIDTH;
+            //position.x = GameController.SPACE_WIDTH - hitArea.radius;
+            //velocity.x *= -1; //меняем вектор в другую сторону (отскок)
         }
         if(position.y < hitArea.radius){
-            position.y = hitArea.radius;
-            velocity.y *= -1; //меняем вектор в другую сторону (отскок)
+            position.y = GameController.SPACE_HEIGHT - hitArea.radius - 1;
+            //position.y = hitArea.radius;
+            //velocity.y *= -1; //меняем вектор в другую сторону (отскок)
         }
-        if(position.y > ScreenManager.SCREEN_HEIGHT - hitArea.radius){
-            position.y = ScreenManager.SCREEN_HEIGHT - hitArea.radius;
-            velocity.y *= -1; //меняем вектор в другую сторону (отскок)
+        if(position.y > GameController.SPACE_HEIGHT - hitArea.radius){
+            position.y = hitArea.radius + 1;
+            //position.y = GameController.SPACE_HEIGHT - hitArea.radius;
+            //velocity.y *= -1; //меняем вектор в другую сторону (отскок)
         }
     }
     public void updateScore(float dt){

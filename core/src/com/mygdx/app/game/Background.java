@@ -23,8 +23,8 @@ public class Background {
 
         public void update(float dt){
             if(gc != null) {
-                position.x += (velocity.x - gc.getHero().getVelocity().x / 10.0f) * dt;
-                position.y += (velocity.y - gc.getHero().getVelocity().y / 10.0f) * dt;
+                position.x += (velocity.x - gc.getHero().getVelocity().x / 4.0f) * dt;
+                position.y += (velocity.y - gc.getHero().getVelocity().y / 4.0f) * dt;
             } else {
                 position.mulAdd(velocity, dt);
             }

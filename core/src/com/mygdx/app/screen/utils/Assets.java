@@ -3,6 +3,8 @@ package com.mygdx.app.screen.utils;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -44,9 +46,14 @@ public class Assets {
             case GAME:
                 //загружаем атлас текстур
                 assetManager.load("images/game.pack", TextureAtlas.class);
+                assetManager.load("audio/Shoot.mp3", Sound.class);
+                assetManager.load("audio/Music.mp3", Music.class);
+                assetManager.load("audio/BigExplosion.mp3", Sound.class);
+                assetManager.load("audio/SmallExplosion.mp3", Sound.class);
                 createStandardFont(32);
                 createStandardFont(16);
                 createStandardFont(24);
+                createStandardFont(72);
                 //ожидаем пока текстура зарузится
                 assetManager.finishLoading();
                 //получаем загруженный атлас

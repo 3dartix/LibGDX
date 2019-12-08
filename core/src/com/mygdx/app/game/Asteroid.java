@@ -1,5 +1,6 @@
 package com.mygdx.app.game;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Circle;
@@ -23,6 +24,8 @@ public class Asteroid implements Poolable {
     private Circle hitArea;
     private final float BASE_SIZE = 256f;
     private final float BASE_RADIUS = BASE_SIZE / 2f;
+    private Sound bigExplosion;
+    private Sound smallExplosion;
 
     public int getHpMax() {
         return hpMax;
@@ -47,6 +50,8 @@ public class Asteroid implements Poolable {
         this.hp = 0;
         this.hitArea = new Circle(0,0,0);
         this.texture = Assets.getInstance().getAtlas().findRegion("asteroid");
+        this.bigExplosion = Assets.getInstance().getAssetManager().get("audio/BigExplosion.mp3");
+        this.smallExplosion = Assets.getInstance().getAssetManager().get("audio/SmallExplosion.mp3");
     }
 
     public float getScale() {
@@ -61,10 +66,14 @@ public class Asteroid implements Poolable {
             if (scale > 0.9f) {
                 gc.getAsteroidController().setup(position.x, position.y, MathUtils.random(-100.0f, 100.0f), MathUtils.random(-100.0f, 100.0f), scale - 0.2f);
                 gc.getAsteroidController().setup(position.x, position.y, MathUtils.random(-100.0f, 100.0f), MathUtils.random(-100.0f, 100.0f), scale - 0.2f);
+                bigExplosion.play(0.6f);
             } else if (scale > 0.25f) {
                 gc.getAsteroidController().setup(position.x, position.y, MathUtils.random(-100.0f, 100.0f), MathUtils.random(-100.0f, 100.0f), scale - 0.2f);
                 gc.getAsteroidController().setup(position.x, position.y, MathUtils.random(-100.0f, 100.0f), MathUtils.random(-100.0f, 100.0f), scale - 0.2f);
                 gc.getAsteroidController().setup(position.x, position.y, MathUtils.random(-100.0f, 100.0f), MathUtils.random(-100.0f, 100.0f), scale - 0.2f);
+                bigExplosion.play(0.4f);
+            } else {
+                smallExplosion.play(0.1f);
             }
 
             return true;
@@ -85,7 +94,7 @@ public class Asteroid implements Poolable {
     public void activate(float x, float y, float vx, float vy, float scale){
         this.position.set(x, y);
         this.velocity.set(vx,vy);
-        this.hpMax = (int)(10 * scale) * gc.getLevel();
+        this.hpMax = (int)(10 + (gc.getLevel() *2) * scale);
         this.hp = this.hpMax;
         this.angle = MathUtils.random(0, 360f);
         this.hitArea.setPosition(position);
@@ -104,15 +113,15 @@ public class Asteroid implements Poolable {
         angle += rotationSpeed * dt;
 
         if(position.x < - BASE_RADIUS * scale){
-            position.x = ScreenManager.SCREEN_WIDTH + BASE_RADIUS * scale;
+            position.x = GameController.SPACE_WIDTH + BASE_RADIUS * scale;
         }
-        if(position.x > ScreenManager.SCREEN_WIDTH + BASE_RADIUS * scale){
+        if(position.x > GameController.SPACE_WIDTH  + BASE_RADIUS * scale){
             position.x = - BASE_RADIUS * scale;
         }
         if(position.y < - BASE_RADIUS * scale){
-            position.y = ScreenManager.SCREEN_HEIGHT + BASE_RADIUS * scale;
+            position.y = GameController.SPACE_HEIGHT  + BASE_RADIUS * scale;
         }
-        if(position.y > ScreenManager.SCREEN_HEIGHT + BASE_RADIUS * scale ){
+        if(position.y > GameController.SPACE_HEIGHT + BASE_RADIUS * scale ){
             position.y = - BASE_RADIUS * scale;
         }
         hitArea.setPosition(position);

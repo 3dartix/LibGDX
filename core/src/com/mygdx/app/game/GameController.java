@@ -2,15 +2,21 @@ package com.mygdx.app.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.mygdx.app.screen.ScreenManager;
+import com.mygdx.app.screen.utils.Assets;
 
 import static java.lang.Math.*;
 
 public class GameController {
+    public static final int SPACE_WIDTH = 9600;
+    public static final int SPACE_HEIGHT = 5400;
+
+    private Music music;
     private Background backgrond;
     private BulletController bulletController;
     private ParticleController particleController;
@@ -21,7 +27,14 @@ public class GameController {
     private Stage stage;
     private int level;
 
+    private float msgTimer;
+    private String msg;
+
     public GameController(SpriteBatch batch) {
+        this.music = Assets.getInstance().getAssetManager().get("audio/Music.mp3");
+        this.music.setLooping(true);
+        music.play();
+
         this.backgrond = new Background(this);
         this.hero = new Hero(this, "PLAYER1");
         this.asteroidController = new AsteroidController(this);
@@ -32,7 +45,9 @@ public class GameController {
         this.powerUpsController = new PowerUpsController(this);
         this.stage.addActor(hero.getShop());
         Gdx.input.setInputProcessor(stage);
-        LevelUP();
+        generateTwoBigAsteroids();
+        this.msg = "Level 1";
+        this.msgTimer = 3.0f;
     }
 
     public int getLevel() {
@@ -59,8 +74,15 @@ public class GameController {
     public Hero getHero() {
         return hero;
     }
+    public float getMsgTimer() {
+        return msgTimer;
+    }
+    public String getMsg() {
+        return msg;
+    }
 
     public void update(float dt){
+        msgTimer -= dt;
         backgrond.update(dt);
         hero.update(dt);
         bulletController.update(dt);
@@ -69,30 +91,25 @@ public class GameController {
         powerUpsController.update(dt);
         checkCollisions();
 
-        if(isAsteroidsEnd()){
-            LevelUP();
-        }
-
         if(!hero.isAlive()) {
             ScreenManager.getInstance().changeScreen(ScreenManager.ScreenType.GAMEOVER, hero);
         }
+
+        if (asteroidController.getActiveList().size() == 0) {
+            level++;
+            generateTwoBigAsteroids();
+            this.msg = "Level " + (level +1);
+            this.msgTimer = 3.0f;
+        }
+
         stage.act(dt);
     }
 
-    public void LevelUP(){
-        this.level++;
-        for (int i = 0; i < level; i++) {
-            float posX = MathUtils.random(0, ScreenManager.SCREEN_WIDTH);
-            float posY = MathUtils.random(0, ScreenManager.SCREEN_HEIGHT);
-            this.asteroidController.setup(posX, posY, (float)Math.cos(Math.toRadians(MathUtils.random(0,360)))*MathUtils.random(30,60), (float)Math.sin(Math.toRadians(MathUtils.random(0,360)))*MathUtils.random(30,60),1f); //создание астероида
+    public void generateTwoBigAsteroids() {
+        for (int i = 0; i < 200; i++) {
+            this.asteroidController.setup(MathUtils.random(0, SPACE_WIDTH), MathUtils.random(0, SPACE_HEIGHT),
+                    MathUtils.random(-150.0f, 150.0f), MathUtils.random(-150.0f, 150.0f), 0.6f);
         }
-    }
-
-    public boolean isAsteroidsEnd(){
-        if(asteroidController.getActiveList().size() == 0){
-          return true;
-        }
-        return false;
     }
 
     public void checkCollisions(){
