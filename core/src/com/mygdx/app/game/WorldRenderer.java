@@ -83,6 +83,7 @@ public class WorldRenderer {
         gc.getBulletController().render(batch);
         gc.getParticleController().render(batch);
         gc.getBonusController().render(batch);
+        gc.getBot().render(batch);
         batch.end();
         frameBuffer.end();
         //нарисовали картнку, далее показываем эту картинку

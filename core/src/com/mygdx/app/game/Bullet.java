@@ -11,9 +11,14 @@ public class Bullet implements Poolable {
     private Vector2 velocity;
     private boolean active;
     private float angle; // угол повората на момент создания
+    private String type; //кем была выпущена пуля ботом или героем
 
     public Vector2 getPosition() {
         return position;
+    }
+
+    public String getType() {
+        return type;
     }
 
     public Vector2 getVelocity() {
@@ -40,11 +45,12 @@ public class Bullet implements Poolable {
     }
 
     //vx - скорость, vy - направление
-    public void activate(float x, float y, float vx, float vy, float angle){
+    public void activate(String type, float x, float y, float vx, float vy, float angle){
         position.set(x, y);
         velocity.set(vx,vy);
         active = true;
         this.angle = angle;
+        this.type = type;
     }
 
     public void update(float dt){

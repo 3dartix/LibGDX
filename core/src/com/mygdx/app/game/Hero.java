@@ -244,7 +244,10 @@ public class Hero {
         if(stopKoef < 0) {
             stopKoef = 0;
         }
+
         velocity.scl(stopKoef);
+
+
         if(velocity.len() > 50) {
             float bx, by; //хвост кор.
             bx = position.x - 28 * (float)Math.cos(Math.toRadians(angle));

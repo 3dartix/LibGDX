@@ -6,6 +6,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.mygdx.app.screen.ScreenManager;
 import com.mygdx.app.screen.utils.Assets;
@@ -27,6 +28,8 @@ public class GameController {
     private Stage stage;
     private int level;
 
+    private Bot bot;
+
     private float msgTimer;
     private String msg;
 
@@ -46,6 +49,14 @@ public class GameController {
         this.stage.addActor(hero.getShop());
         Gdx.input.setInputProcessor(stage);
         generateTwoBigAsteroids();
+
+        this.bot = new Bot(this, 0.2f, 1, 600, 100,
+                new Vector3[]{
+                        new Vector3(28,0, 0), // нос
+                        new Vector3(28,90, 20), // бок1
+                        new Vector3(28,-90, -20), // бок2
+                });
+
         this.msg = "Level 1";
         this.msgTimer = 3.0f;
     }
@@ -74,6 +85,9 @@ public class GameController {
     public Hero getHero() {
         return hero;
     }
+    public Bot getBot() {
+        return bot;
+    }
     public float getMsgTimer() {
         return msgTimer;
     }
@@ -89,6 +103,7 @@ public class GameController {
         asteroidController.update(dt);
         particleController.update(dt);
         powerUpsController.update(dt);
+        bot.update(dt);
         checkCollisions();
 
         if(!hero.isAlive()) {
@@ -157,6 +172,41 @@ public class GameController {
                             powerUpsController.setup(a.getPosition().x, a.getPosition().y, a.getScale() / 4.0f);
                         }
                     }
+                    break;
+                }
+
+                //столкновение пуль врага с героем
+                if(hero.getHitArea().contains(b.getPosition()) && b.getType() == "enemy"){
+
+                    particleController.setup(
+                            b.getPosition().x + MathUtils.random(-4, 4), b.getPosition().y + MathUtils.random(-4, 4),
+                            b.getVelocity().x * -0.3f + MathUtils.random(-30, 30), b.getVelocity().y * -0.3f + MathUtils.random(-30, 30),
+                            0.2f,
+                            2.2f, 1.7f,
+                            1.0f, 1.0f, 1.0f, 1.0f,
+                            0.0f, 0.0f, 1.0f, 0.0f
+                    );
+
+
+                    hero.takeDamag(2);
+                    b.deactivate();
+                    break;
+                }
+
+                if(bot.getHitArea().contains(b.getPosition()) && b.getType() == "hero"){
+
+                    particleController.setup(
+                            b.getPosition().x + MathUtils.random(-4, 4), b.getPosition().y + MathUtils.random(-4, 4),
+                            b.getVelocity().x * -0.3f + MathUtils.random(-30, 30), b.getVelocity().y * -0.3f + MathUtils.random(-30, 30),
+                            0.2f,
+                            2.2f, 1.7f,
+                            1.0f, 1.0f, 1.0f, 1.0f,
+                            0.0f, 0.0f, 1.0f, 0.0f
+                    );
+
+
+                    bot.takeDamag(2);
+                    b.deactivate();
                     break;
                 }
             }
