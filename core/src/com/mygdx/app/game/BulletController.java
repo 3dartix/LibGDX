@@ -31,8 +31,8 @@ public class BulletController extends ObjectPool<Bullet> {
     }
 
     //vx - скорость, vy - направление
-    public void setup(String type, float x, float y, float vx, float vy, float angle){
-        getActiveElement().activate(type, x, y, vx, vy, angle);
+    public void setup(Ship owner, String titel, float x, float y, float vx, float vy, int damage, float angle, float lifetimeDistance){
+        getActiveElement().activate(owner, titel, x, y, vx, vy, damage, angle, lifetimeDistance);
     }
 
     public void update(float dt){

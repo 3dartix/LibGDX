@@ -81,8 +81,7 @@ public class PowerUp implements Poolable {
     }
 
     public void setNewVector(Vector2 pos){
-        tmpVec.set(position).sub(pos);
-        velocity.set(tmpVec.scl(-1));
+        tmpVec.set(pos).sub(position).nor().scl(200);
     }
 
     public void update(float dt) {

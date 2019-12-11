@@ -84,6 +84,7 @@ public class WorldRenderer {
         gc.getParticleController().render(batch);
         gc.getBonusController().render(batch);
         gc.getBot().render(batch);
+        gc.getInfoController().render(batch, font32);
         batch.end();
         frameBuffer.end();
         //нарисовали картнку, далее показываем эту картинку
@@ -95,6 +96,9 @@ public class WorldRenderer {
 
 
         batch.begin();
+
+        //        tmpVector.set(gc.getHero().getPosition());
+//        ScreenManager.getInstance().getViewport().project(tmpVector);
 
         //при отрисовки указываем программе использовать наш шейдер
         //batch.setShader(shaderProgram);

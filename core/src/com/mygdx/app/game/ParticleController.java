@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.mygdx.app.game.helpers.ObjectPool;
 import com.mygdx.app.screen.utils.Assets;
 
@@ -23,6 +24,40 @@ public class ParticleController extends ObjectPool<Particle> {
             for (int i = 0; i < 16; i++) {
                 float angle = 6.28f / 16.0f * i;
                 setup(x, y, (float) Math.cos(angle) * 100.0f, (float) Math.sin(angle) * 100.0f, 0.8f, 3.0f, 2.8f, 0, 1, 0, 1, 1, 1, 0, 0.4f);
+            }
+        }
+
+        public void bulletCollideWithAsteroid(Vector2 bulletPosition, Vector2 bulletVelocity) {
+            setup(
+                    bulletPosition.x + MathUtils.random(-4, 4), bulletPosition.y + MathUtils.random(-4, 4),
+                    bulletVelocity.x * -0.3f + MathUtils.random(-30, 30), bulletVelocity.y * -0.3f + MathUtils.random(-30, 30),
+                    0.2f,
+                    2.2f, 1.7f,
+                    1.0f, 1.0f, 1.0f, 1.0f,
+                    0.0f, 0.0f, 1.0f, 0.0f
+            );
+        }
+
+        public void createBulletTrace(String weaponTitle, Vector2 bulletPosition, Vector2 bulletVelocity) {
+            if(weaponTitle.equals("Laser")) {
+                setup(
+                        bulletPosition.x + MathUtils.random(-4, 4), bulletPosition.y + MathUtils.random(-4, 4),
+                        bulletVelocity.x * -0.3f + MathUtils.random(-20, 20), bulletVelocity.y * -0.3f + MathUtils.random(-20, 20),
+                        0.2f,
+                        1.4f, 1.0f,
+                        1.0f, 0.0f, 0.0f, 1.0f,
+                        1.0f, 1.0f, 0.0f, 0.0f
+                );
+            }
+            if(weaponTitle.equals("GreenLaser")) {
+                setup(
+                        bulletPosition.x + MathUtils.random(-4, 4), bulletPosition.y + MathUtils.random(-4, 4),
+                        bulletVelocity.x * -0.3f + MathUtils.random(-20, 20), bulletVelocity.y * -0.3f + MathUtils.random(-20, 20),
+                        0.3f,
+                        1.2f, 2.4f,
+                        0.2f, 1.0f, 0.2f, 1.0f,
+                        0.3f, 1.0f, 0.3f, 0.4f
+                );
             }
         }
     }
