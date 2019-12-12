@@ -30,7 +30,8 @@ public class GameController {
     private int level;
     private StringBuilder tmpStr;
 
-    private Bot bot;
+    //private Bot bot;
+    private BotController botController;
 
     private float msgTimer;
     private String msg;
@@ -54,7 +55,8 @@ public class GameController {
         Gdx.input.setInputProcessor(stage);
         generateTwoBigAsteroids();
 
-        this.bot = new Bot(this);
+        this.botController = new BotController(this);
+        //this.bot = new Bot(this);
 
         this.msg = "Level 1";
         this.msgTimer = 3.0f;
@@ -84,9 +86,13 @@ public class GameController {
     public Hero getHero() {
         return hero;
     }
-    public Bot getBot() {
-        return bot;
+    public BotController getBotController() {
+        return botController;
     }
+
+    //    public Bot getBot() {
+//        return bot;
+//    }
     public float getMsgTimer() {
         return msgTimer;
     }
@@ -106,7 +112,7 @@ public class GameController {
         particleController.update(dt);
         powerUpsController.update(dt);
         infoController.update(dt);
-        bot.update(dt);
+        botController.update(dt);
         checkCollisions(dt);
 
         if(!hero.isAlive()) {
@@ -141,10 +147,14 @@ public class GameController {
                     continue; // если астероид столкнулся и уничтожен, то он не может столкнуться с кем-то еще
                 };
             }
-            //столкновение с ботом
-            if(CheckPhysicHit(bot, a)) {
-                a.takeDamage(2);
+            //столкновение астероидов с ботом
+            for (int j = 0; j < botController.getActiveList().size(); j++) {
+                Bot b = botController.getActiveList().get(j);
+                if(CheckPhysicHit(b, a)) {
+                    a.takeDamage(2);
+                }
             }
+
         }
 
         // пули
@@ -162,6 +172,8 @@ public class GameController {
                             ((Hero)b.getOwner()).addScore(a.getHpMax()* 100);
                             //GlobalStatistic.getInstance().addTotalScore(a.getHpMax()* 100);
                             // бросаем бонус
+                            botController.setup(a.getPosition().x, a.getPosition().y, a.getScale() / 4.0f);
+
                             for (int k = 0; k < 3; k++) {
                                 powerUpsController.setup(a.getPosition().x, a.getPosition().y, a.getScale() / 4.0f);
                             }
@@ -178,10 +190,15 @@ public class GameController {
             // если выстрелили мы
             if(b.getOwner().ownerType == OwnerType.PLAYER){
                 //бот получает урон
-                if(bot.getHitArea().contains(b.getPosition())){
-                    bot.takeDamage(b.getDamage());
-                    b.deactivate();
+                for (int j = 0; j < botController.getActiveList().size(); j++) {
+                    Bot bot = botController.getActiveList().get(j);
+                    if(bot.getHitArea().contains(b.getPosition())){
+                        bot.takeDamage(b.getDamage());
+                        b.deactivate();
+                    }
                 }
+
+
             }
             //если владелец бот
             if(b.getOwner().ownerType == OwnerType.BOT){

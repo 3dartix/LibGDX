@@ -83,7 +83,8 @@ public class WorldRenderer {
         gc.getBulletController().render(batch);
         gc.getParticleController().render(batch);
         gc.getBonusController().render(batch);
-        gc.getBot().render(batch);
+        //gc.getBot().render(batch);
+        gc.getBotController().render(batch);
         gc.getInfoController().render(batch, font32);
         batch.end();
         frameBuffer.end();

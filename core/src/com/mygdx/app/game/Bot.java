@@ -3,11 +3,13 @@ package com.mygdx.app.game;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.mygdx.app.game.helpers.Poolable;
 import com.mygdx.app.screen.utils.Assets;
 
-public class Bot extends Ship {
+public class Bot extends Ship implements Poolable {
     private Vector2 dst;
     private float visionRadius;
+    private boolean active;
 
     public Bot(GameController gc) {
         super(gc, 50);
@@ -20,11 +22,10 @@ public class Bot extends Ship {
                 new Vector3[]{new Vector3(24, 0, 0)});
         this.dst = new Vector2(MathUtils.random(0, GameController.SPACE_WIDTH), MathUtils.random(0, GameController.SPACE_HEIGHT));
         this.visionRadius = 1000.0f;
+        this.active = false;
     }
 //1:40
     public void update(float dt) {
-
-
         super.update(dt);
         tmpVector.set(dst).sub(position).nor();
         if (position.dst(gc.getHero().getPosition()) < visionRadius) {
@@ -56,5 +57,26 @@ public class Bot extends Ship {
                 );
             }
         }
+
+        if (!hp.isAboveZero()){
+            deactivate();
+            System.out.println("deactivate bot");
+        }
+    }
+
+    @Override
+    public boolean isActive() {
+        return active;
+    }
+
+    public void deactivate() {
+        active = false;
+    }
+
+    public void activate(float x, float y){
+        this.changePosition (x, y);
+        this.hp.fill();
+        this.angle = MathUtils.random(0, 360f);
+        this.active = true;
     }
 }

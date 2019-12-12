@@ -170,13 +170,18 @@ public class Hero extends Ship{
         batch.draw(starTexture, mapX - 24, mapY - 24, 48, 48);
 
         {
-            float dst = position.dst(gc.getBot().getPosition());
-            if (dst < 3000.0f) {
-                tmpVector.set(gc.getBot().getPosition()).sub(this.position);
-                tmpVector.scl(160.0f / 3000.0f);
-                batch.setColor(Color.PURPLE);
-                batch.draw(starTexture, mapX + tmpVector.x - 16, mapY + tmpVector.y - 16, 32, 32);
+            for (int i = 0; i < gc.getBotController().getActiveList().size(); i++) {
+                Bot b = gc.getBotController().getActiveList().get(i);
+                
+                float dst = position.dst(b.getPosition());
+                if (dst < 3000.0f) {
+                    tmpVector.set(b.getPosition()).sub(this.position);
+                    tmpVector.scl(160.0f / 3000.0f);
+                    batch.setColor(Color.PURPLE);
+                    batch.draw(starTexture, mapX + tmpVector.x - 16, mapY + tmpVector.y - 16, 32, 32);
+                }
             }
+
         }
 
         batch.setColor(Color.RED);
