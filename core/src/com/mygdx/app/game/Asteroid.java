@@ -137,6 +137,7 @@ public class Asteroid implements Poolable {
 
 
         //position.mulAdd(tmpVector,dt);
+        
 
 
         angle += rotationSpeed * dt;
