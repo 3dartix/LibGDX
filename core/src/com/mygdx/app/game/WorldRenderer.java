@@ -78,6 +78,7 @@ public class WorldRenderer {
 
         //начинаем рисовать
         batch.begin();
+        gc.getPlanet().render(batch);
         gc.getAsteroidController().render(batch);
         gc.getHero().render(batch);
         gc.getBulletController().render(batch);
@@ -86,6 +87,8 @@ public class WorldRenderer {
         //gc.getBot().render(batch);
         gc.getBotController().render(batch);
         gc.getInfoController().render(batch, font32);
+
+
         batch.end();
         frameBuffer.end();
         //нарисовали картнку, далее показываем эту картинку

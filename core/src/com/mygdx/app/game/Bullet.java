@@ -14,7 +14,7 @@ public class Bullet implements Poolable {
     private float angle; // угол повората на момент создания
     private String type; //кем была выпущена пуля ботом или героем
     private int damage;
-    private Ship owner;
+    private Ship owner; //принадлежность
     private String weaponTitle;
 
     public int getDamage(){

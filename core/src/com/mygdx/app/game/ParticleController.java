@@ -38,6 +38,30 @@ public class ParticleController extends ObjectPool<Particle> {
             );
         }
 
+        public void asteroidCollideWithPlanet(Vector2 bulletPosition, Vector2 bulletVelocity) {
+            setup(
+                    bulletPosition.x + MathUtils.random(-4, 4), bulletPosition.y + MathUtils.random(-4, 4),
+                    bulletVelocity.x * -0.3f + MathUtils.random(-60, 60), bulletVelocity.y * -0.3f + MathUtils.random(-60, 60),
+                    0.3f,
+                    3.2f, 1.7f,
+                    1.0f, 0.8f, 0.0f, 1.0f,
+                    0.0f, 0.0f, 1.0f, 0.0f
+            );
+        }
+
+        public void createAsteroidTrace(Vector2 asteroidPosition, Vector2 asteroidVelocity, float scale) {
+            setup(
+                    asteroidPosition.x + MathUtils.random(-4, 4), asteroidPosition.y + MathUtils.random(-4, 4),
+                    asteroidVelocity.x + 100, asteroidVelocity.y + 100,
+                    0.3f,
+                    scale * 30, 1f,
+                    1.0f, 0.8f, 0.0f, 1.0f - scale,
+                    1.0f, 1.0f, 1.0f, 0.5f
+            );
+        }
+
+
+
         public void createBulletTrace(String weaponTitle, Vector2 bulletPosition, Vector2 bulletVelocity) {
             if(weaponTitle.equals("Laser")) {
                 setup(

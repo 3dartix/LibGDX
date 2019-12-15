@@ -26,6 +26,7 @@ public class Asteroid implements Poolable {
     private final float BASE_RADIUS = BASE_SIZE / 2f;
     private Sound bigExplosion;
     private Sound smallExplosion;
+    private Vector2 tmpVector;
 
     public int getHpMax() {
         return hpMax;
@@ -40,6 +41,10 @@ public class Asteroid implements Poolable {
         return velocity;
     }
 
+    public void setScale(float scale) {
+        this.scale = scale;
+    }
+
     public Asteroid(GameController gc) {
         this.gc = gc;
         this.position = new Vector2(0,0);
@@ -52,6 +57,7 @@ public class Asteroid implements Poolable {
         this.texture = Assets.getInstance().getAtlas().findRegion("asteroid");
         this.bigExplosion = Assets.getInstance().getAssetManager().get("audio/BigExplosion.mp3");
         this.smallExplosion = Assets.getInstance().getAssetManager().get("audio/SmallExplosion.mp3");
+        this.tmpVector = new Vector2(0,0);
     }
 
     public float getScale() {
@@ -93,7 +99,17 @@ public class Asteroid implements Poolable {
     //vx - скорость, vy - направление
     public void activate(float x, float y, float vx, float vy, float scale){
         this.position.set(x, y);
-        this.velocity.set(vx,vy);
+
+        if(scale > 0.6) {
+            tmpVector.set(gc.getPlanet().getPosition());
+            this.velocity.set(tmpVector.sub(position).nor().scl(50));
+        } else {
+            this.velocity.set(vx, vy);
+        }
+
+        //tmpVector.sub(position).nor().scl(50);
+
+
         this.hpMax = (int)(10 + (gc.getLevel() *2) * scale);
         this.hp = this.hpMax;
         this.angle = MathUtils.random(0, 360f);
@@ -109,7 +125,20 @@ public class Asteroid implements Poolable {
     }
 
     public void update(float dt){
+
         position.mulAdd(velocity,dt);
+
+        if(position.dst(gc.getPlanet().getPosition()) < 600){
+            scale -= 0.1f * dt;
+            this.hitArea.setRadius(BASE_RADIUS * scale * 0.9f);
+            tmpVector.set(position);
+            gc.getParticleController().getEffectBuilder().createAsteroidTrace(position, tmpVector.sub(gc.getPlanet().getPosition().cpy()), scale);
+        }
+
+
+        //position.mulAdd(tmpVector,dt);
+
+
         angle += rotationSpeed * dt;
 
         if(position.x < - BASE_RADIUS * scale){
