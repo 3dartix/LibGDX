@@ -93,7 +93,7 @@ public class Hero extends Ship{
         this.gc = gc;
         this.starTexture = Assets.getInstance().getAtlas().findRegion("star16");
         this.texture = Assets.getInstance().getAtlas().findRegion("ship");
-        this.changePosition(ScreenManager.SCREEN_WIDTH/2, ScreenManager.SCREEN_HEIGHT/2);
+        this.changePosition(GameController.SPACE_WIDTH/2, GameController.SPACE_HEIGHT/2);
         this.velocity = new Vector2(0,0);
         this.angle = 0;
         //this.hitArea = new Circle(position.x,position.y,26); 26!!!!!!!!!!!!1

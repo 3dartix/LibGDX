@@ -14,8 +14,8 @@ import com.mygdx.app.screen.utils.Assets;
 import static java.lang.Math.*;
 
 public class GameController {
-    public static final int SPACE_WIDTH = 9600;
-    public static final int SPACE_HEIGHT = 5400;
+    public static final int SPACE_WIDTH = ScreenManager.SCREEN_WIDTH * 3;
+    public static final int SPACE_HEIGHT = ScreenManager.SCREEN_HEIGHT * 3;
 
     private Music music;
     private Background backgrond;
@@ -28,6 +28,7 @@ public class GameController {
     private Vector2 tmpVec; // Вектор для столкновений
     private Stage stage;
     private int level;
+    private Planet planet;
     private StringBuilder tmpStr;
 
     //private Bot bot;
@@ -39,7 +40,7 @@ public class GameController {
     public GameController(SpriteBatch batch) {
         this.music = Assets.getInstance().getAssetManager().get("audio/Music.mp3");
         this.music.setLooping(true);
-        music.play();
+        this.music.play();
 
         this.backgrond = new Background(this);
         this.hero = new Hero(this, "PLAYER1");
@@ -52,6 +53,8 @@ public class GameController {
         this.infoController = new InfoController();
         this.stage.addActor(hero.getShop());
         this.tmpStr = new StringBuilder();
+        this.planet = new Planet(this);
+
         Gdx.input.setInputProcessor(stage);
         generateTwoBigAsteroids();
 
@@ -85,6 +88,9 @@ public class GameController {
     }
     public Hero getHero() {
         return hero;
+    }
+    public Planet getPlanet() {
+        return planet;
     }
     public BotController getBotController() {
         return botController;
@@ -130,8 +136,9 @@ public class GameController {
     }
 
     public void generateTwoBigAsteroids() {
-        for (int i = 0; i < 200; i++) {
+        for (int i = 0; i < 100; i++) {
             this.asteroidController.setup(MathUtils.random(0, SPACE_WIDTH), MathUtils.random(0, SPACE_HEIGHT),
+                    //planet.getPosition().x, planet.getPosition().y, 0.6f);
                     MathUtils.random(-150.0f, 150.0f), MathUtils.random(-150.0f, 150.0f), 0.6f);
         }
     }
@@ -155,6 +162,11 @@ public class GameController {
                 }
             }
 
+            //столкновение астероида с планетой
+            if(planet.getHitArea().overlaps(a.getHitArea())) {
+                particleController.getEffectBuilder().asteroidCollideWithPlanet(a.getPosition(), a.getVelocity());
+                a.deactivate();
+            }
         }
 
         // пули
